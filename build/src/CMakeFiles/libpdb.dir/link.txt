@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpdb.a CMakeFiles/libpdb.dir/libpdb.cpp.o
+/usr/bin/ranlib libpdb.a
