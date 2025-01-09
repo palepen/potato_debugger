@@ -69,28 +69,28 @@ include src/CMakeFiles/libpdb.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/CMakeFiles/libpdb.dir/flags.make
 
-src/CMakeFiles/libpdb.dir/libpdb.cpp.o: src/CMakeFiles/libpdb.dir/flags.make
-src/CMakeFiles/libpdb.dir/libpdb.cpp.o: /home/sunless/projects/potato_debugger/src/libpdb.cpp
-src/CMakeFiles/libpdb.dir/libpdb.cpp.o: src/CMakeFiles/libpdb.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sunless/projects/potato_debugger/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/libpdb.dir/libpdb.cpp.o"
-	cd /home/sunless/projects/potato_debugger/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/libpdb.dir/libpdb.cpp.o -MF CMakeFiles/libpdb.dir/libpdb.cpp.o.d -o CMakeFiles/libpdb.dir/libpdb.cpp.o -c /home/sunless/projects/potato_debugger/src/libpdb.cpp
+src/CMakeFiles/libpdb.dir/process.cpp.o: src/CMakeFiles/libpdb.dir/flags.make
+src/CMakeFiles/libpdb.dir/process.cpp.o: /home/sunless/projects/potato_debugger/src/process.cpp
+src/CMakeFiles/libpdb.dir/process.cpp.o: src/CMakeFiles/libpdb.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sunless/projects/potato_debugger/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/libpdb.dir/process.cpp.o"
+	cd /home/sunless/projects/potato_debugger/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/libpdb.dir/process.cpp.o -MF CMakeFiles/libpdb.dir/process.cpp.o.d -o CMakeFiles/libpdb.dir/process.cpp.o -c /home/sunless/projects/potato_debugger/src/process.cpp
 
-src/CMakeFiles/libpdb.dir/libpdb.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/libpdb.dir/libpdb.cpp.i"
-	cd /home/sunless/projects/potato_debugger/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunless/projects/potato_debugger/src/libpdb.cpp > CMakeFiles/libpdb.dir/libpdb.cpp.i
+src/CMakeFiles/libpdb.dir/process.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/libpdb.dir/process.cpp.i"
+	cd /home/sunless/projects/potato_debugger/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sunless/projects/potato_debugger/src/process.cpp > CMakeFiles/libpdb.dir/process.cpp.i
 
-src/CMakeFiles/libpdb.dir/libpdb.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/libpdb.dir/libpdb.cpp.s"
-	cd /home/sunless/projects/potato_debugger/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunless/projects/potato_debugger/src/libpdb.cpp -o CMakeFiles/libpdb.dir/libpdb.cpp.s
+src/CMakeFiles/libpdb.dir/process.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/libpdb.dir/process.cpp.s"
+	cd /home/sunless/projects/potato_debugger/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sunless/projects/potato_debugger/src/process.cpp -o CMakeFiles/libpdb.dir/process.cpp.s
 
 # Object files for target libpdb
 libpdb_OBJECTS = \
-"CMakeFiles/libpdb.dir/libpdb.cpp.o"
+"CMakeFiles/libpdb.dir/process.cpp.o"
 
 # External object files for target libpdb
 libpdb_EXTERNAL_OBJECTS =
 
-src/libpdb.a: src/CMakeFiles/libpdb.dir/libpdb.cpp.o
+src/libpdb.a: src/CMakeFiles/libpdb.dir/process.cpp.o
 src/libpdb.a: src/CMakeFiles/libpdb.dir/build.make
 src/libpdb.a: src/CMakeFiles/libpdb.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/sunless/projects/potato_debugger/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libpdb.a"

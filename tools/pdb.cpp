@@ -13,6 +13,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+#include <libpdb/process.hpp>
+#include <libpdb/error.hpp>
+
 // namespace with no name is used when we want to restrict the programs to this file only
 namespace
 {
@@ -35,39 +38,39 @@ namespace
     // returns if the string is equal to prefix or not
     bool is_prefix(std::string_view str, std::string_view of)
     {
-        if(str.size() > of.size()) return false;
+        if (str.size() > of.size())
+            return false;
         return std::equal(str.begin(), str.end(), of.begin());
     }
 
-
-    // to continue the process 
-    void resume(pid_t pid)
+    // whenever a child process or inferior stops we infer or print the reason here
+    void print_stop_reason(const pdb::process &process, pdb::stop_reason reason)
     {
-        // PTRACE_CONT req is used to continue a given process
-        if(ptrace(PTRACE_CONT, pid, nullptr, nullptr ) < 0)
+        std::cout << "Process " << process.pid() << ' ';
+
+        switch (reason.reason)
         {
-            std::cerr << "Couldn't continue\n";
-            std::exit(-1);
+        case pdb::process_state::exited:
+            std::cout << "Exited with status " << static_cast<int>(reason.info);
+            break;
+
+        // sigabbrev_np gets abbreviation for the signal code or we could also use sys_siglist[reason.info]
+        case pdb::process_state::terminated:
+            std::cout << "Terminated with signal " << sigabbrev_np(reason.info);
+            break;
+
+        case pdb::process_state::stopped:
+            std::cout << "Stopped with signal " << sigabbrev_np(reason.info);
+
+        default:
+            break;
         }
 
+        std::cout << std::endl;
     }
 
-    //wait till we get a signal 
-    void wait_on_signal(pid_t pid)
-    {
-        int wait_status;
-        int options = 0;
-
-        while (waitpid(pid, &wait_status, options) < 0)
-        {
-            std::perror("waitpid failed");
-            std::exit(-1);
-        }
-        
-    }
-
-    // handles each command
-    void handle_command(pid_t pid, std::string_view line)
+    // handles each command passed through cmd
+    void handle_command(std::unique_ptr<pdb::process> &process, std::string_view line)
     {
 
         // split the command on spaces (can be used when multiple arguments)
@@ -75,14 +78,16 @@ namespace
 
         std::string command = args[0];
 
-        // if the prefix is continue then continue then wait for a singal
+        // if the prefix is continue then continue
         // this signal can be hardware or software(breakpoints)
-
-        
         if (is_prefix(command, "continue"))
         {
-            resume(pid);
-            wait_on_signal(pid);
+            process->resume();
+            // then we wait for the child process to stopped or terminated
+            pdb::stop_reason reason = process->wait_on_signal();
+
+            // print the reason
+            print_stop_reason(*process, reason);
         }
         // if not recognized then we print errir
         else
@@ -91,60 +96,69 @@ namespace
         }
     }
 
-}
-
-namespace
-{
-    pid_t attach(int argc, const char **argv)
+    std::unique_ptr<pdb::process> attach(int argc, const char **argv)
     {
-        pid_t pid = 0;
 
-        if (argc == 1 && argv[1] == std::string_view("-p"))
+        if (argc == 3 && argv[1] == std::string_view("-p"))
         {
-            pid = std::atoi(argv[2]);
-            if (pid <= 0)
-            {
-                std::cerr << "Invalid pid\n";
-                return -1;
-            }
-            // attach a running process
-            if (ptrace(PTRACE_ATTACH, pid, /*addr=*/nullptr, /*data=*/nullptr) < 0)
-            {
-                std::perror("Could not attach");
-                return -1;
-            }
+            pid_t pid = std::atoi(argv[2]);
+            // we attach a process
+            return pdb::process::attach(pid);
         }
         else
         {
             const char *program_path = argv[1];
+            // launch the new program and attach
+            return pdb::process::launch(program_path);
+        }
+    }
 
-            if ((pid = fork()) < 0)
+    void main_loop(std::unique_ptr<pdb::process> &process)
+    {
+        char *line = nullptr;
+
+        // read new lines from command line
+        while ((line = readline("pdb> ")) != nullptr)
+        {
+            // common variable for storing the command
+            std::string line_str;
+
+            // check if the command is empty
+            if (line == std::string_view(""))
             {
-                std::perror("fork failed");
-                return -1;
+                free(line);
+
+                // get the last instruction [feature]
+                // history_list and history_length = readline feature
+                if (history_length > 0)
+                {
+                    line_str = history_list()[history_length - 1]->line;
+                }
+            }
+            else
+            {
+                line_str = line;
+
+                // we add this command to searchable history
+                add_history(line);
+
+                // cleanup memory
+                free(line);
             }
 
-            // when we call fork this program gets duplicated into new process
-            // the two process differs in pid ie the child has 0 and parent has pid of child
-            if (pid == 0)
+            if (!line_str.empty())
             {
-                // we attach this process(child) by PTRACE_TRACEME
-                if (ptrace(PTRACE_TRACEME, 0, nullptr, nullptr) < 0)
+                // handle the prompt given
+                try
                 {
-                    std::perror("Tracing failed");
-                    return -1;
+                    handle_command(process, line_str);
                 }
-
-                // execute the program passed in arguments
-                if (execlp(program_path, program_path, nullptr) < 0)
+                catch (const pdb::error& err)
                 {
-                    std::perror("Exec failed");
-                    return -1;
+                    std::cout << err.what() << '\n';
                 }
             }
         }
-
-        return pid;
     }
 }
 
@@ -158,53 +172,16 @@ int main(int argc, const char **argv)
         return -1;
     }
 
-    pid_t pid = attach(argc, argv);
-
-    int wait_status;
-    // helps to pass flags
-    int options = 0;
-
-    // here we wait for the process to stop after attach to it
-    if (waitpid(pid, &wait_status, options) < 0)
+    try
     {
-        std::perror("waitpid failed");
+        // attach to the inferior 
+        std::unique_ptr<pdb::process> process = attach(argc, argv);
+        
+        // start executing the debugger 
+        main_loop(process);
     }
-
-    char *line = nullptr;
-
-    // read new lines from command line
-    while ((line = readline("pdb> ")) != nullptr)
+    catch (const pdb::error& err)
     {
-        // common variable for storing the command
-        std::string line_str;
-
-        // check if the command is empty
-        if (line == std::string_view(""))
-        {
-            free(line);
-
-            // get the last instruction [feature]
-            // history_list and history_length = readline feature
-            if (history_length > 0)
-            {
-                line_str = history_list()[history_length - 1]->line;
-            }
-        }
-        else
-        {
-            line_str = line;
-
-            // we add this command to searchable history
-            add_history(line);
-
-            // cleanup memory
-            free(line);
-        }
-
-        if (!line_str.empty())
-        {
-            // handle the prompt given
-            handle_command(pid, line);
-        }
+        std::cout << err.what() << '\n';
     }
 }

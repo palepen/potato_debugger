@@ -185,29 +185,29 @@ libpdb/fast:
 	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/build
 .PHONY : libpdb/fast
 
-libpdb.o: libpdb.cpp.o
-.PHONY : libpdb.o
+process.o: process.cpp.o
+.PHONY : process.o
 
 # target to build an object file
-libpdb.cpp.o:
-	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/libpdb.cpp.o
-.PHONY : libpdb.cpp.o
+process.cpp.o:
+	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/process.cpp.o
+.PHONY : process.cpp.o
 
-libpdb.i: libpdb.cpp.i
-.PHONY : libpdb.i
+process.i: process.cpp.i
+.PHONY : process.i
 
 # target to preprocess a source file
-libpdb.cpp.i:
-	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/libpdb.cpp.i
-.PHONY : libpdb.cpp.i
+process.cpp.i:
+	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/process.cpp.i
+.PHONY : process.cpp.i
 
-libpdb.s: libpdb.cpp.s
-.PHONY : libpdb.s
+process.s: process.cpp.s
+.PHONY : process.s
 
 # target to generate assembly for a file
-libpdb.cpp.s:
-	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/libpdb.cpp.s
-.PHONY : libpdb.cpp.s
+process.cpp.s:
+	cd /home/sunless/projects/potato_debugger/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/libpdb.dir/build.make src/CMakeFiles/libpdb.dir/process.cpp.s
+.PHONY : process.cpp.s
 
 # Help Target
 help:
@@ -223,9 +223,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... test"
 	@echo "... libpdb"
-	@echo "... libpdb.o"
-	@echo "... libpdb.i"
-	@echo "... libpdb.s"
+	@echo "... process.o"
+	@echo "... process.i"
+	@echo "... process.s"
 .PHONY : help
 
 

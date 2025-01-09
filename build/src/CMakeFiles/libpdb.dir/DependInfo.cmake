@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/sunless/projects/potato_debugger/src/libpdb.cpp" "src/CMakeFiles/libpdb.dir/libpdb.cpp.o" "gcc" "src/CMakeFiles/libpdb.dir/libpdb.cpp.o.d"
+  "/home/sunless/projects/potato_debugger/src/process.cpp" "src/CMakeFiles/libpdb.dir/process.cpp.o" "gcc" "src/CMakeFiles/libpdb.dir/process.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

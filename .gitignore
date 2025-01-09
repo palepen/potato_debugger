@@ -1,2 +1,2 @@
-./build/
+./build/git config advice.addIgnoredFile false
 .vscode

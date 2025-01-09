@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/libpdb.dir/libpdb.cpp.o"
-  "CMakeFiles/libpdb.dir/libpdb.cpp.o.d"
+  "CMakeFiles/libpdb.dir/process.cpp.o"
+  "CMakeFiles/libpdb.dir/process.cpp.o.d"
   "libpdb.a"
   "libpdb.pdb"
 )

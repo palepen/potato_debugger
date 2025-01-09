@@ -1,4 +1,4 @@
-add_library(libpdb libpdb.cpp)
+add_library(libpdb process.cpp)
 add_library(pdb::libpdb ALIAS libpdb)
 
 set_target_properties(
