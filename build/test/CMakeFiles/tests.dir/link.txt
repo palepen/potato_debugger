@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/tests.dir/tests.cpp.o -o tests  ../src/libpdb.a /usr/lib64/libCatch2Main.so.3.7.1 /usr/lib64/libCatch2.so.3.7.1
