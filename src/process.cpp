@@ -64,6 +64,8 @@ std::unique_ptr<pdb::process> pdb::process::attach(pid_t pid)
     }
 
     std::unique_ptr<process> proc(new process(pid, /*terminate_on_end=*/false));
+    
+    // wait for the process to stop at the entry of the program 
     proc->wait_on_signal();
 
     return proc;

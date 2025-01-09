@@ -1,23 +1,33 @@
 # Debugger 
 
-Top to down shows the execution flow of the program
+## Types
+> **error class**
+error class to handle exeptions with two main function which do no return to normal control flow  
+1. **send:**  throws any custom error 
+2. **send_errno:** handles error which are occured by system
+
+> **process_state**
+Keeps track of state of the process
+
+> **stop_reason**
+contains reason if program stopped or terminated
+
+> **process**
+Contains info abt the process and programs to handle all the functions related to a process
+1. wait_on_signal
+2. launch
+3. attach
+4. resume
+
+
+## Top to down shows the execution flow of the program
 
 > **/tools/pdb.cpp**  
-we attach to the given program or process.  
+Entry point of the whole program where we attach the existing inferior or new inferior to parent and then proceed to run the debugger  
 
 > **attach()**  
- Takes the pid and depending upon the type of argument given it either attaches to a existing process or runs the new program in diff process.  
- In case of new program we call fork which copies the current process and starts  running  
- Here depending upon if the process is the parent(pid returned is pid of child) or child(pid returned is zero) we conitnue to different workflows.  
- In child process we call execlp and run the program.  
+Takes the argc and argv and then proceed to execute depending on the existing process or executes new one  
+attaches to existing one by proces::attach and returns the pointer to process type  
+launches new by process::launch     
 
-> **Back to main(/tools/pdb.cpp)**
-  we wait for the process attached to stop by waitpid  
-  we use readline function to give the tui  
-  we read each line as the command and then handle its execution  
-  we also store each command used in history_list provided by readline library and execute them if empty command is given  
-
->> **handle_command()**
-
-
-
+> **handle_command()**
