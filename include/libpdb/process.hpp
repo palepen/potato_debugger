@@ -6,64 +6,68 @@
 #include <sys/types.h>
 #include <cstdint>
 
-namespace pdb{
-    
+namespace pdb
+{
+
     // to keep track of the state of running process
-    enum class process_state{
-        stopped, 
+    enum class process_state
+    {
+        stopped,
         running,
         exited,
         terminated
     };
-    
+
     struct stop_reason
     {
         stop_reason(int wait_status);
 
         // keeps why the process has stopped
         process_state reason;
-    
+
         // contains info abt stop like return value or signal
         std::uint8_t info;
     };
-    
+
     // we need to create a process type
     // we should not be able to copy this as this is unique and we do not want ot start a new process
     // hence we use smart pointers
-    class process{
-        public:
-            // to delete andy the process
-            ~process();
+    class process
+    {
+    public:
+        // to delete andy the process
+        ~process();
 
-            stop_reason wait_on_signal();
+        stop_reason wait_on_signal();
 
-            // to launch a process
-            static std::unique_ptr<process> launch(std::filesystem::path path);
-            // to attach to a process
-            static std::unique_ptr<process> attach(pid_t pid);
+        // to launch a process
+        static std::unique_ptr<process> launch(std::filesystem::path path, bool debug = true);
 
-            
-            void resume();
+        // to attach to a process
+        static std::unique_ptr<process> attach(pid_t pid);
 
-            pid_t pid() const { return pid_;}
-            
-            // this is to force to use static members
-            process() = delete;
+        void resume();
 
-            // delete the copy and move behaviour
-            process(const process&) = delete;
-            process& operator=(const process&) = delete;
+        pid_t pid() const { return pid_; }
 
-            process_state state() const { return state_;}
-        private:
+        // this is to force to use static members
+        process() = delete;
 
-            process(pid_t pid, bool terminate_on_end) : pid_(pid), terminate_on_end_(terminate_on_end){}
-            pid_t pid_ = 0;
+        // delete the copy and move behaviour
+        process(const process &) = delete;
+        process &operator=(const process &) = delete;
 
-            // to track termination
-            bool terminate_on_end_ = true;
+        process_state state() const { return state_; }
 
-            process_state state_ = process_state::stopped;
+    private:
+        process(pid_t pid, bool terminate_on_end, bool is_attached) : pid_(pid), terminate_on_end_(terminate_on_end), is_attached_(is_attached) {}
+
+        pid_t pid_ = 0;
+
+        // to track termination
+        bool terminate_on_end_ = true;
+        bool is_attached_ = true;
+        process_state state_ = process_state::stopped;
     };
 }
 

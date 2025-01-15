@@ -89,7 +89,7 @@ namespace
             // print the reason
             print_stop_reason(*process, reason);
         }
-        // if not recognized then we print errir
+        // if not recognized then we print error
         else
         {
             std::cerr << "Unknown command\n";
