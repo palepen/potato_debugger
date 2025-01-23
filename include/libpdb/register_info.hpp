@@ -43,7 +43,7 @@ namespace pdb
         std::string_view name;
         std::int32_t dwarf_id;
         std::size_t size;
-        std::size_t offset;
+        std::size_t offset; // The relative position of the register within a larger memory block or structure.
         register_type type;
         register_format format;
     };

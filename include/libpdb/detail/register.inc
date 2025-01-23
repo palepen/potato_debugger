@@ -2,7 +2,7 @@
 #error "This file is intended for textual inclusion with the DEFINE_REGISTER macro defined"
 #endif
 
-#define GPR_OFFSET(reg) (offset(user, regs) + offsetof(user_regs_struct, reg))
+#define GPR_OFFSET(reg) (offsetof(user, regs) + offsetof(user_regs_struct, reg))
 
 #define DEFINE_GPR_64(name, dwarf_id) \
     DEFINE_REGISTER(name, dwarf_id, 8, GPR_OFFSET(name),\
@@ -96,7 +96,7 @@ DEFINE_GPR_8L(r14b, r14), DEFINE_GPR_8L(r15b, r15),
     register_format::long_double)
 
 #define DEFINE_FP_MM(number) \
-    DEFINE_REGISTER(,, ## number, (41 + number), 8, \
+    DEFINE_REGISTER(mm ## number, (41 + number), 8, \
     (FPR_OFFSET(st_space) + number * 16), register_type::fpr, \
     register_format::vector)
 
