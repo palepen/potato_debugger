@@ -5,6 +5,7 @@
 #include <memory>
 #include <sys/types.h>
 #include <cstdint>
+#include <libpdb/registers.hpp>
 
 namespace pdb
 {
@@ -59,8 +60,17 @@ namespace pdb
 
         process_state state() const { return state_; }
 
+        // const and non-const getter function
+        registers& get_registers() { return *registers_; }
+        const registers& get_registers() const { return *registers_; }
+
+        // writes in the user area of process
+        void write_user_area(std::size_t offset, std::uint64_t data);
+
     private:
-        process(pid_t pid, bool terminate_on_end, bool is_attached) : pid_(pid), terminate_on_end_(terminate_on_end), is_attached_(is_attached) {}
+        process(pid_t pid, bool terminate_on_end, bool is_attached) : pid_(pid), terminate_on_end_(terminate_on_end), is_attached_(is_attached), registers_(new registers(*this)) {}
+
+        void read_all_registers();
 
         pid_t pid_ = 0;
 
@@ -68,6 +78,9 @@ namespace pdb
         bool terminate_on_end_ = true;
         bool is_attached_ = true;
         process_state state_ = process_state::stopped;
+
+        // pointer to the register data
+        std::unique_ptr<registers> registers_;
     };
 }
 

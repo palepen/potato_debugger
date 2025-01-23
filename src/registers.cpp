@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <libpdb/register.hpp>
+#include <libpdb/registers.hpp>
 #include <libpdb/bit.hpp>
 #include <libpdb/process.hpp>
 
@@ -68,4 +68,9 @@ void pdb::registers::write(const register_info& info, value val)
             std::terminate();
         }
     }, val);
+
+    // although we made a change in our memory the operating system does not know that the values have been changed 
+    // ptrace provides an area of memory same format as user struct called user area where we can update it;
+
+    proc_->write_user_area(info.offset, from_bytes(std::uint64_t)(bytes + info.offset));
 }

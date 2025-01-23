@@ -191,7 +191,6 @@ pdb::stop_reason::stop_reason(int wait_status)
 pdb::stop_reason pdb::process::wait_on_signal()
 {
     int wait_status;
-
     int options = 0;
 
     if (waitpid(pid_, &wait_status, options) < 0)
@@ -201,5 +200,55 @@ pdb::stop_reason pdb::process::wait_on_signal()
 
     stop_reason reason(wait_status);
     state_ = reason.reason;
+    
+    // every time the inferior is not terminated and stopped then we read all the register values
+    if(is_attached_ and state_ == process_state::stopped)
+    {
+        read_all_registers();
+    }
+
     return reason;
+}
+
+void pdb::process::read_all_registers()
+{
+    // read all the gpr and store them in the data_.regs  
+    if(ptrace(PTRACE_GETREGS, pid_, nullptr, &get_registers().data_.regs) < 0)
+    {
+        error::send_errno("Could not read GPR registers");
+    }
+    
+    // read all the fpr and store them in the data_.i387 
+    if(ptrace(PTRACE_GETFPREGS, pid_, nullptr, &get_registers().data_.i387) < 0)
+    {
+        error::send_errno("Could not read FPR registers");    
+    }
+
+    // we cant simple loop over the enums of the debug registers then we use this approach
+    for(int i = 0; i < 8; i++)
+    {
+        // retrieve the id of the dr0 register then start adding the index to it to get the correct id 
+        // hence we cast it to int
+        auto id = static_cast<int> (register_id::dr0) + i;
+
+        // cast by to the register_id and call the func
+        auto info = register_info_by_id(static_cast<register_id>(id));
+
+        errno = 0;
+        // now we read the data and store it in data
+        std::int64_t data = ptrace(PTRACE_PEEKUSER, pid_, info.offset, nullptr);
+        if(errno != 0) error::send_errno("Could not read FPR registers");    
+
+        // store this in user data_
+        get_registers().data_.u_debugreg[i] = data;
+    }
+}
+
+void pdb::process::write_user_area(std::size_t offset, std::uint64_t data)
+{
+    // PTRACE_POKEUSER is used to write data in the user area by ptrace
+    if(ptrace(PTRACE_POKEUSER, pid_, offset, data) < 0)
+    {
+        error::send_errno("Could not write to user area");
+    }
 }
