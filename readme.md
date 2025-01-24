@@ -55,3 +55,6 @@ The macros which take the name of the sub-register and the name of the register 
 we also define the orig_rax which provides a way to get id of a syscall
 
 The register numbers for the consecutive st, mm, and xmm registers are also consecutive, so we calculate them by adding the register number to the DWARF ID for the lowest register. Note that, while the st registers are 10 bytes wide in hardware, they’re stored as 16-byte values in the user_fpregs_struct type, so we supply 16 as their size . Similarly, while the mm registers are 8 bytes wide, they have an additional 8 bytes of padding in user_fpregs_struct, so we multiply their offset by 16 rather than 8.
+
+> **register Read and write**
+Issue occurs because PTRACE_POKEUSER and PTRACE_PEEKUSER simply don’t support writing and reading from the x87 area on x64. It is s likely due to the fact that many of the registers in this struct are smaller than 64-bits

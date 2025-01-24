@@ -24,7 +24,7 @@ namespace pdb
     }
 
     template <class From>
-    const std::byte* as_bytes(From& from)
+    std::byte* as_bytes(From& from)
     {
         return reinterpret_cast<std::byte*> (&from);
     }
