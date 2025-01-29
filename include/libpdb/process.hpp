@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <cstdint>
 #include <libpdb/registers.hpp>
+#include <optional>
 
 namespace pdb
 {
@@ -41,9 +42,10 @@ namespace pdb
 
         stop_reason wait_on_signal();
 
-        // to launch a process
-        static std::unique_ptr<process> launch(std::filesystem::path path, bool debug = true);
-
+        // to launch a process 
+        static std::unique_ptr<process> launch(std::filesystem::path path, bool debug = true, std::optional<int> stdout_replacement = std::nullopt);
+        // we provide a file descriptor to the stdout_replaceement so as to commnicate with the test progs
+        
         // to attach to a process
         static std::unique_ptr<process> attach(pid_t pid);
 

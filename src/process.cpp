@@ -22,7 +22,8 @@ namespace
 }
 
 // this function executes the process and waits for it to halt
-std::unique_ptr<pdb::process> pdb::process::launch(std::filesystem::path path, bool debug)
+// optional indicatest that this arg can be empty thats why the null check
+std::unique_ptr<pdb::process> pdb::process::launch(std::filesystem::path path, bool debug, std::optional<int> stdout_replacement)
 {
     // we set close on exec as true bcoz we dont want to leave the fd hanging
     pipe channel(/*close_on_exec=*/true);
@@ -41,6 +42,17 @@ std::unique_ptr<pdb::process> pdb::process::launch(std::filesystem::path path, b
     {
         // if we are inside the process we ensure that we will not perform read operations
         channel.close_read();
+        
+        // nullcheck for the replacement
+        if(stdout_replacement)
+        {   
+            // dup2 is a syscall which closes the second File Descriptor arg and then duplicates teh first fd to the second
+            // simple temrss anything that goes through stdout now goes through whaterver *stdout_replacement points to 
+            if(dup2(*stdout_replacement, STDOUT_FILENO) < 0)
+            {
+                exit_with_perror(channel, "stdout replacement failed");
+            }
+        }
 
         // we attach this process(child) by PTRACE_TRACEME
         if (debug and ptrace(PTRACE_TRACEME, 0, nullptr, nullptr) < 0)
